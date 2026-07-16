@@ -30,12 +30,25 @@ def setup_compliance_logger(name: str = "vector_compliance") -> logging.Logger:
     
     # Avoid duplicate handlers if already configured
     if not logger.handlers:
-        handler = logging.StreamHandler()
-        handler.setFormatter(JSONFormatter())
-        logger.addHandler(handler)
+        # Stream handler (Stdout)
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(JSONFormatter())
+        logger.addHandler(stream_handler)
+        
+        # File handler (SIEM compliant file logging)
+        import os
+        log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "logs"))
+        os.makedirs(log_dir, exist_ok=True)
+        log_file = os.path.join(log_dir, "vector_compliance.log")
+        
+        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        file_handler.setFormatter(JSONFormatter())
+        logger.addHandler(file_handler)
+        
         logger.propagate = False
         
     return logger
+
 
 # Primary audit logger instance
 audit_logger = setup_compliance_logger()

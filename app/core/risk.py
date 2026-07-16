@@ -3,15 +3,18 @@ from app.config import settings
 
 def evaluate_transaction_risk(
     amount_sar: float,
-    is_anomalous: bool = False
+    is_anomalous: bool = False,
+    auto_approve_limit: float = None
 ) -> Tuple[Dict[str, Any], str]:
     """
     Evaluates transaction risk based on SAMA sandbox rules.
     Returns (response_payload, risk_rating)
     """
+    limit = auto_approve_limit if auto_approve_limit is not None else settings.SAMA_AUTO_APPROVE_LIMIT
+    
     # SAMA OB Rule: Transactions above limit or containing behavioral/semantic anomalies
     # must undergo additional cognitive confirmation (e.g. dynamic slider).
-    if amount_sar >= settings.SAMA_AUTO_APPROVE_LIMIT or is_anomalous:
+    if amount_sar >= limit or is_anomalous:
         return {
             "status": "requires_verification",
             "risk_level": "high",

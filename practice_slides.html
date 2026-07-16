@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector AI - Practice & Defense Slides</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['IBM Plex Sans Arabic', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        background: '#0B0F19',
+                        surface: '#151D30',
+                        primary: '#00B0FF', /* Soft Blue for training theme */
+                        secondary: '#00E676', /* Accent Green */
+                        accent: '#FFD700',
+                        muted: '#94A3B8',
+                        border: '#2A3B5C',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #F8FAFC;
+            overflow: hidden;
+        }
+        .slide {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95) translateY(20px);
+            padding: 3rem;
+        }
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #00B0FF 0%, #00E676 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-sans h-screen w-screen relative">
+
+    <!-- Progress Bar -->
+    <div class="absolute top-0 left-0 right-0 h-2 bg-gray-900 z-50">
+        <div id="progress" class="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300" style="width: 12.5%;"></div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6 bg-surface/90 backdrop-blur border border-border px-8 py-4 rounded-full z-50 shadow-2xl">
+        <button onclick="prevSlide()" class="hover:text-primary transition-colors flex items-center justify-center p-2 active:scale-95 duration-75">
+            <span class="material-symbols-outlined text-[36px]">arrow_forward</span>
+        </button>
+        <span id="slide-num" class="text-lg font-mono tracking-wider font-semibold text-muted">1 / 8</span>
+        <button onclick="nextSlide()" class="hover:text-primary transition-colors flex items-center justify-center p-2 active:scale-95 duration-75">
+            <span class="material-symbols-outlined text-[36px]">arrow_back</span>
+        </button>
+    </div>
+
+    <!-- Slides Container -->
+    <div class="relative w-full h-full">
+
+        <!-- SLIDE 1: Title & Concept -->
+        <div class="slide active" id="slide-1">
+            <div class="max-w-5xl text-center space-y-8">
+                <div class="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xl font-bold tracking-wide">
+                    <span class="material-symbols-outlined text-xl">model_training</span>
+                    دليل التدريب الداخلي والمحاكاة الدفاعية
+                </div>
+                <h1 class="text-7xl md:text-8xl font-black tracking-tight leading-tight gradient-text">
+                    Vector AI: التدريب
+                </h1>
+                <p class="text-3xl md:text-4xl font-extrabold text-white">
+                    كيف نجيب على أسئلة المحكمين الماليين بثقة واحترافية؟
+                </p>
+                <div class="h-1.5 w-40 bg-gradient-to-r from-primary to-secondary mx-auto"></div>
+                <p class="text-xl md:text-2xl text-muted max-w-4xl mx-auto leading-relaxed">
+                    هذا العرض التقديمي مخصص لتدريب الفريق على الأسئلة الخمسة الحرجة، وتوزيع الأدوار، وامتلاك لغة الأرقام والتشريعات لانتزاع الفوز.
+                </p>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Golden Defense Strategy -->
+        <div class="slide" id="slide-2">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-base font-bold">
+                        <span class="material-symbols-outlined text-base">military_tech</span>
+                        استراتيجية الدفاع الذهبية
+                    </div>
+                    <h2 class="text-5xl font-black text-white leading-tight">قاعدة الـ 30 ثانية لـلإقناع المالي</h2>
+                    <p class="text-xl text-muted leading-relaxed">
+                        عندما يطرح المحكم سؤالاً، لا تتفلسف؛ بل اتبع الهيكل الثلاثي السريع لقطع شكوكه باليقين:
+                    </p>
+                    <ul class="space-y-4 text-xl font-bold text-white/90">
+                        <li class="flex items-start gap-3">
+                            <span class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-black text-lg">1</span>
+                            <span>ابدأ بالرقم المباشر أو النتيجة (الأثر الفعلي).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-black text-lg">2</span>
+                            <span>اشرح الآلية التقنية باختصار شديد (الخوارزمية المحلية).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-black text-lg">3</span>
+                            <span>اربط الحل بكود وضابط ساما (SAMA Compliance).</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl space-y-6">
+                    <h3 class="text-2xl font-bold text-secondary flex items-center gap-2 border-b border-border/50 pb-2">
+                        <span class="material-symbols-outlined">gavel</span>
+                        كروت اللعب الرابحة أمام اللجنة
+                    </h3>
+                    <div class="space-y-4 text-base text-muted">
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-accent">check_circle</span>
+                            <p><strong class="text-white">التوطين اللغوي:</strong> حلنا سعودي 100% يفهم ما تفشل فيه الخوارزميات الغربية.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-accent">check_circle</span>
+                            <p><strong class="text-white">السرعة الفائقة:</strong> 1.8ms لا تعطل المدفوعات الفورية.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-accent">check_circle</span>
+                            <p><strong class="text-white">الامتثال التلقائي:</strong> نحن جاهزون للاندماج الفوري في البنك المركزي.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Q1: False Positives -->
+        <div class="slide" id="slide-3">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="text-red-400 font-mono text-lg font-bold">سؤال 1: دقة الكشف والتنبيهات الكاذبة</div>
+                    <h2 class="text-4xl font-black text-white leading-tight">"كيف تضمنون ألا يتعطل العميل الطبيعي؟"</h2>
+                    <div class="bg-red-500/10 border border-red-500/20 p-5 rounded-xl text-base text-red-200">
+                        <strong>خطر المحكم:</strong> الخوف من أن تؤدي حماية اللهجة إلى إيقاف حوالات سليمة وتخريب تجربة الدفع للعملاء.
+                    </div>
+                </div>
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl space-y-6">
+                    <div class="text-xl font-bold text-secondary border-b border-border/50 pb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-2xl">security</span>
+                        خطة الرد الدفاعي (30 ثانية)
+                    </div>
+                    <p class="text-lg text-white font-semibold leading-relaxed">
+                        "بوابتنا تسجل معدل تنبيهات كاذبة لا يتعدى 0.8%."
+                    </p>
+                    <p class="text-base text-muted leading-relaxed">
+                        نحقق ذلك لأننا لا نعتمد على الكلمات المفردة، بل نحتسب المتجه السياقي الكامل للنص (Semantic Vector). فإذا استخدم العميل كلمة نجدية دارجة في سياق تحويل طبيعي، يتعرف النظام عليها كعملية آمنة فوراً. حمايتنا ذكية وموجهة للسياق العدائي فقط.
+                    </p>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-primary font-mono text-center">
+                        الضابط المرتبط: SAMA-OB-PIS-SEC-204
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: Q2: Saudi Dialect -->
+        <div class="slide" id="slide-4">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="text-red-400 font-mono text-lg font-bold">سؤال 2: تغطية تنوع اللهجات السعودية</div>
+                    <h2 class="text-4xl font-black text-white leading-tight">"اللهجة السعودية تختلف بين المناطق، كيف تغطونها؟"</h2>
+                    <div class="bg-red-500/10 border border-red-500/20 p-5 rounded-xl text-base text-red-200">
+                        <strong>خطر المحكم:</strong> الشك في قدرة النظام على التعامل مع التنوع اللغوي الكبير بين الشمال والجنوب والشرق والوسط.
+                    </div>
+                </div>
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl space-y-6">
+                    <div class="text-xl font-bold text-secondary border-b border-border/50 pb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-2xl">translate</span>
+                        خطة الرد الدفاعي (30 ثانية)
+                    </div>
+                    <p class="text-lg text-white font-semibold leading-relaxed">
+                        "لدينا قاعدة بيانات 'درع اللهجة السعودية' وتغطي 200+ مصطلح مالي."
+                    </p>
+                    <p class="text-base text-muted leading-relaxed">
+                        تغطي متجهاتنا اللهجات النجدية، الحجازية، الجنوبية، والشرقية. كما قمنا ببناء حلقة تغذية راجعة للامتثال (Compliance Feedback Loop) تسمح لضباط الأمان في البنك بإضافة أي مصطلح عامي مستجد أو مريب وتحديث قاعدة بيانات التشابه الدلالي لحظياً دون الحاجة لإعادة التدريب.
+                    </p>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-primary font-mono text-center">
+                        الضابط المرتبط: SAMA-OB-PIS-SEC-204
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: Q3: Latency & Performance -->
+        <div class="slide" id="slide-5">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="text-red-400 font-mono text-lg font-bold">سؤال 3: زمن المعالجة وتأثيره على الحوالات الفورية</div>
+                    <h2 class="text-4xl font-black text-white leading-tight">"هل يتسبب نظامكم في إبطاء المدفوعات الفورية??"</h2>
+                    <div class="bg-red-500/10 border border-red-500/20 p-5 rounded-xl text-base text-red-200">
+                        <strong>خطر المحكم:</strong> معايير ساما الصارمة لسرعة الحوالات الفورية؛ أي تأخير يزيد عن 50ms يطلق إنذار أداء.
+                    </div>
+                </div>
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl space-y-6">
+                    <div class="text-xl font-bold text-secondary border-b border-border/50 pb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-2xl">speed</span>
+                        خطة الرد الدفاعي (30 ثانية)
+                    </div>
+                    <p class="text-lg text-white font-semibold leading-relaxed">
+                        "زمن الفحص الإجمالي لبوابتنا هو 1.8 مللي ثانية فقط."
+                    </p>
+                    <p class="text-base text-muted leading-relaxed">
+                        يمثل هذا الزمن أقل من 0.05% من زمن معالجة الحوالة الإجمالي. لقد ابتكرنا بنية معالجة في الذاكرة الحية (In-Memory Processing) تعمل بشكل محلي بالكامل على خوادم البنك دون الحاجة للاتصال بخدمات الذكاء الاصطناعي السحابية البطيئة، مما يضمن أداءً فائقاً.
+                    </p>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-primary font-mono text-center">
+                        الضابط المرتبط: SAMA-OB-SYS-PERF-501 (أقل من 50ms)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: Q4: API Integration -->
+        <div class="slide" id="slide-6">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="text-red-400 font-mono text-lg font-bold">سؤال 4: سهولة التكامل مع الأنظمة البنكية</div>
+                    <h2 class="text-4xl font-black text-white leading-tight">"كيف سنقوم بدمجكم في بنية البنك المعقدة؟"</h2>
+                    <div class="bg-red-500/10 border border-red-500/20 p-5 rounded-xl text-base text-red-200">
+                        <strong>خطر المحكم:</strong> كره البنوك لتغيير بنيتهم الأساسية وتفضيلهم للحلول التي لا تتطلب صيانة وتعديل كبير.
+                    </div>
+                </div>
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl space-y-6">
+                    <div class="text-xl font-bold text-secondary border-b border-border/50 pb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-2xl">hub</span>
+                        خطة الرد الدفاعي (30 ثانية)
+                    </div>
+                    <p class="text-lg text-white font-semibold leading-relaxed">
+                        "نحن نعمل كبوابة وسيطة Plug-and-Play API Gateway تتكامل في 30 دقيقة."
+                    </p>
+                    <p class="text-base text-muted leading-relaxed">
+                        نظام Vector AI يتم إدراجه كفلتر أمني خارجي يستقبل الطلب من واجهة المصرفية المفتوحة (RESTful API)، يقوم بالتحقق وإرجاع القرار مشفراً بالرموز التنظيمية. لا نطلب من البنك تعديل كود أنظمته القديمة، بل نؤمن واجهاته الخارجية مباشرة.
+                    </p>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-primary font-mono text-center">
+                        الضابط المرتبط: SAMA-OB-PIS-SEC-101
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: Q5: Regulatory Agility -->
+        <div class="slide" id="slide-7">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="text-red-400 font-mono text-lg font-bold">سؤال 5: تغير تشريعات البنك المركزي</div>
+                    <h2 class="text-4xl font-black text-white leading-tight">"ماذا لو غيرت ساما حدود التحويل غداً؟"</h2>
+                    <div class="bg-red-500/10 border border-red-500/20 p-5 rounded-xl text-base text-red-200">
+                        <strong>خطر المحكم:</strong> الخوف من جمود النظام وحاجته للصيانة المستمرة وتدخل المبرمجين مع كل تحديث تشريعي.
+                    </div>
+                </div>
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl space-y-6">
+                    <div class="text-xl font-bold text-secondary border-b border-border/50 pb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-2xl">settings_accessibility</span>
+                        خطة الرد الدفاعي (30 ثانية)
+                    </div>
+                    <p class="text-lg text-white font-semibold leading-relaxed">
+                        "المنصة تدعم التنظيم الديناميكي الذاتي (Dynamic Compliance)."
+                    </p>
+                    <p class="text-base text-muted leading-relaxed">
+                        لقد بنينا لوحة تحكم إدارية خاصة بمسؤولي الامتثال في البنك، تتيح لهم تعديل قيم الحدود المالية (مثل حد الـ 500 ريال) أو إضافة ضوابط تحقق جديدة، وتحديث قاعدة البيانات للقرار فوراً بضغطة زر وبدون كتابة سطر برمجيات واحد.
+                    </p>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-primary font-mono text-center">
+                        الضابط المرتبط: SAMA-OB-PIS-AUT-102
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: Team Tactics & Live Demo Execution -->
+        <div class="slide" id="slide-8">
+            <div class="max-w-6xl w-full space-y-8">
+                <div class="text-center space-y-3">
+                    <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-base font-bold">
+                        <span class="material-symbols-outlined text-base">groups</span>
+                        توزيع الأدوار وسيناريو الإقناع النهائي
+                    </div>
+                    <h2 class="text-5xl font-black text-white">تكتيكات الفوز في المحادثة والتفاعل</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                    <div class="bg-surface/40 border border-border p-5 rounded-xl space-y-3">
+                        <h3 class="font-extrabold text-white text-lg flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">record_voice_over</span>
+                            1. المقدم والشارح
+                        </h3>
+                        <p class="text-sm text-muted">يبدأ بقصة أم نورة بنبرة واضحة ومؤثرة لشد انتباه اللجنة، ويربط المشكلة بضرورة التوطين اللغوي في قطاع الفينتك.</p>
+                    </div>
+                    <div class="bg-surface/40 border border-border p-5 rounded-xl space-y-3">
+                        <h3 class="font-extrabold text-white text-lg flex items-center gap-2">
+                            <span class="material-symbols-outlined text-secondary">devices</span>
+                            2. منفذ العرض التفاعلي
+                        </h3>
+                        <p class="text-sm text-muted">يقوم بتهيئة لوحة التحكم الحية ويدعو المحكمين فوراً لكتابة عبارات التحايل بالعامية لقطع شكوكهم ورؤية الحظر الفوري.</p>
+                    </div>
+                    <div class="bg-surface/40 border border-border p-5 rounded-xl space-y-3">
+                        <h3 class="font-extrabold text-white text-lg flex items-center gap-2">
+                            <span class="material-symbols-outlined text-accent">gavel</span>
+                            3. M المدافع والامتثال
+                        </h3>
+                        <p class="text-sm text-muted">يتولى الردود الدفاعية الخمسة، ويركز بنبرة قوية وهادئة على لغة الأرقام وأكواد امتثال ساما لضمان ثقة المشرع المالي.</p>
+                    </div>
+                </div>
+                <p class="text-center text-xl text-primary font-bold">
+                     تذكروا دائماً: نحن لا نبيع نظام حماية فقط، بل نبيع "المُمكّن والدرع الأساسي" لبدء تشغيل المصرفية المفتوحة بثقة.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JS for slide navigation -->
+    <script>
+        const totalSlides = 8;
+        let currentSlide = 1;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach((s, idx) => {
+                if (idx + 1 === currentSlide) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+            document.getElementById('slide-num').innerText = `${currentSlide} / ${totalSlides}`;
+            document.getElementById('progress').style.width = `${(currentSlide / totalSlides) * 100}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Support arrow keys for slide transition
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                prevSlide(); // Because RTL is inverted
+            } else if (e.key === 'ArrowLeft') {
+                nextSlide(); // Because RTL is inverted
+            }
+        });
+    </script>
+</body>
+</html>

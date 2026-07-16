@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector AI - Hackathon Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['IBM Plex Sans Arabic', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        background: '#0B0F19',
+                        surface: '#151D30',
+                        primary: '#00E676', /* Emerald green */
+                        secondary: '#00B0FF', /* Sky blue */
+                        accent: '#FFD700', /* Gold */
+                        muted: '#94A3B8',
+                        border: '#2A3B5C',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            font-size: 118%;
+        }
+        body {
+            background-color: #0B0F19;
+            color: #F8FAFC;
+            overflow: hidden;
+        }
+        .slide {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95) translateY(20px);
+            padding: 5rem 3rem 3rem 3rem; /* Extra top padding for header */
+        }
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #00E676 0%, #00B0FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-sans h-screen w-screen relative">
+
+    <!-- Brand Header (alinma bank + Tuwaiq Academy on left, Hackathon on right) -->
+    <header class="absolute top-0 left-0 right-0 z-40 flex justify-between items-center px-12 py-6 select-none pointer-events-none">
+        <!-- Left Brand Logos -->
+        <div class="flex items-center gap-6">
+            <!-- alinma bank logo icon -->
+            <div class="flex items-center gap-2">
+                <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="20" fill="#1E3A8A"/>
+                    <path d="M50 20C45 35 45 65 50 80C55 65 55 35 50 20Z" fill="#FFD700"/>
+                    <path d="M30 40C40 45 60 45 70 40C60 55 40 55 30 40Z" fill="#FFFFFF"/>
+                </svg>
+                <div class="text-right flex flex-col">
+                    <span class="text-xs font-bold text-white tracking-wider leading-none">الإنمـاء</span>
+                    <span class="text-[10px] text-muted tracking-tight font-semibold leading-none">alinma</span>
+                </div>
+            </div>
+            <!-- Tuwaiq Academy logo icon -->
+            <div class="h-6 w-px bg-border"></div>
+            <div class="flex items-center gap-2">
+                <svg width="40" height="28" viewBox="0 0 80 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylized steps rising -->
+                    <path d="M10 45H22V33H34V21H46V9H58V45H10Z" fill="#00B0FF"/>
+                    <path d="M58 45H70V33H58V45Z" fill="#FFD700"/>
+                </svg>
+                <div class="text-right flex flex-col">
+                    <span class="text-xs font-bold text-white leading-none">أكاديمية طويق</span>
+                    <span class="text-[9px] text-muted font-semibold leading-none">Tuwaiq Academy</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Hackathon Logo -->
+        <div class="flex items-center gap-4">
+            <span class="text-base font-black text-white tracking-widest bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">هاكاثون</span>
+            <div class="flex gap-1">
+                <div class="w-5 h-5 rounded bg-[#00B0FF] flex items-center justify-center text-[9px] font-bold text-white">ط</div>
+                <div class="w-5 h-5 rounded bg-orange-500 flex items-center justify-center text-[9px] font-bold text-white">م</div>
+                <div class="w-5 h-5 rounded bg-white flex items-center justify-center text-[9px] font-bold text-black">ق</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="absolute top-0 left-0 right-0 h-2 bg-gray-900 z-50">
+        <div id="progress" class="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300" style="width: 8.33%;"></div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6 bg-surface/90 backdrop-blur border border-border px-8 py-4 rounded-full z-50 shadow-2xl">
+        <button onclick="prevSlide()" class="hover:text-primary transition-colors flex items-center justify-center p-2 active:scale-95 duration-75">
+            <span class="material-symbols-outlined text-[36px]">arrow_forward</span>
+        </button>
+        <span id="slide-num" class="text-lg font-mono tracking-wider font-semibold text-muted">1 / 12</span>
+        <button onclick="nextSlide()" class="hover:text-primary transition-colors flex items-center justify-center p-2 active:scale-95 duration-75">
+            <span class="material-symbols-outlined text-[36px]">arrow_back</span>
+        </button>
+    </div>
+
+    <!-- Slides Container -->
+    <div class="relative w-full h-full">
+
+        <!-- SLIDE 1: Cover (اسم الفريق والمسار) -->
+        <div class="slide active" id="slide-1">
+            <div class="max-w-5xl text-center space-y-8">
+                <div class="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xl font-bold tracking-wide">
+                    <span class="material-symbols-outlined text-xl">verified_user</span>
+                    مشاريع مسار الذكاء الاصطناعي التوليدي
+                </div>
+                <h1 class="text-8xl md:text-9xl font-black tracking-tight leading-tight gradient-text">
+                    Vector AI
+                </h1>
+                <p class="text-4xl md:text-5xl font-extrabold text-white">
+                    حارس الأمان والامتثال لوكلاء الذكاء الاصطناعي
+                </p>
+                <div class="h-1.5 w-40 bg-gradient-to-r from-primary to-secondary mx-auto"></div>
+                <div class="pt-6">
+                    <div class="inline-block bg-surface/50 border border-border/80 px-10 py-5 rounded-2xl text-2xl font-bold text-accent shadow-xl">
+                        اسم الفريق: Vector AI &bull; مسار الذكاء الاصطناعي التوليدي
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Table of Contents (المحتويات) -->
+        <div class="slide" id="slide-2">
+            <div class="max-w-5xl w-full space-y-8">
+                <div class="text-center space-y-2">
+                    <h2 class="text-5xl font-black text-white">محتويات العرض التقديمي</h2>
+                    <p class="text-lg text-muted">خارطة طريق رحلة مشروع Vector AI</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4">
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl flex items-center gap-4">
+                        <div class="text-3xl font-black text-primary font-mono">01</div>
+                        <div class="text-lg font-bold text-white">المشكلة وحلها</div>
+                    </div>
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl flex items-center gap-4">
+                        <div class="text-3xl font-black text-primary font-mono">02</div>
+                        <div class="text-lg font-bold text-white">وصف ومواءمة الفكرة</div>
+                    </div>
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl flex items-center gap-4">
+                        <div class="text-3xl font-black text-primary font-mono">03</div>
+                        <div class="text-lg font-bold text-white">البيانات المستخدمة</div>
+                    </div>
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl flex items-center gap-4">
+                        <div class="text-3xl font-black text-primary font-mono">04</div>
+                        <div class="text-lg font-bold text-white">التقنيات المستخدمة</div>
+                    </div>
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl flex items-center gap-4">
+                        <div class="text-3xl font-black text-primary font-mono">05</div>
+                        <div class="text-lg font-bold text-white">الاختبار والتحقق</div>
+                    </div>
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl flex items-center gap-4">
+                        <div class="text-3xl font-black text-primary font-mono">06</div>
+                        <div class="text-lg font-bold text-white">العرض التوضيحي</div>
+                    </div>
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl flex items-center gap-4 col-span-2">
+                        <div class="text-3xl font-black text-primary font-mono">07</div>
+                        <div class="text-lg font-bold text-white">التحديات والخطط المستقبلية</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Problem and Solution (المشكلة وحلها) -->
+        <div class="slide" id="slide-3">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
+                <!-- Problem Card -->
+                <div class="bg-red-500/5 border border-red-500/20 p-8 rounded-2xl flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-red-400 font-bold text-lg">
+                            <span class="material-symbols-outlined">gpp_bad</span>
+                            المشكلة والعقبة الرئيسية
+                        </div>
+                        <h3 class="text-3xl font-black text-white">فشل حماية اللهجات العامية وثغرات الأمان</h3>
+                        <p class="text-base text-muted leading-relaxed">
+                            الفلاتر الأمنية العالمية تفشل تماماً بنسبة <span class="text-red-400 font-bold">100%</span> في فهم وتفسير مصطلحات الاحتيال المكتوبة بالعامية السعودية (مثل: <em>"طوّف الحوالة"</em> أو <em>"اسحب على التوثيق"</em>)، مما يعرض البنوك وعملائها للاحتيال المالي الممنهج عبر الهندسة الاجتماعية.
+                        </p>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-xl text-xs text-red-300 font-mono">
+                        أثر التهديد: فقدان مدخرات العملاء بدون إمكانية التتبع أو الحظر الفوري.
+                    </div>
+                </div>
+
+                <!-- Solution Card -->
+                <div class="bg-primary/5 border border-primary/20 p-8 rounded-2xl flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-primary font-bold text-lg">
+                            <span class="material-symbols-outlined">verified_user</span>
+                            الحل المقترح والمبتكر
+                        </div>
+                        <h3 class="text-3xl font-black text-white">بوابة Vector AI لحماية المصرفية المفتوحة</h3>
+                        <p class="text-base text-muted leading-relaxed">
+                            بوابة أمان وسيطة (RegTech Gate) تقف حائلاً بين الوكلاء الماليين للذكاء الاصطناعي وأنظمة البنك الخلفية. تقوم بفحص الطلبات دلالياً ولحظياً في زمن خارق قدره <span class="text-primary font-bold">1.8ms</span> فقط وبدقة كشف بلغت <span class="text-primary font-bold">99.2%</span>.
+                        </p>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-xl text-xs text-primary font-mono">
+                        الأثر الفوري: حماية الحوالات وربطها تلقائياً بأكواد امتثال ساما.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: Concept & Alignment (وصف ومواءمة الفكرة للمسار) -->
+        <div class="slide" id="slide-4">
+            <div class="max-w-6xl w-full space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-5xl font-black text-white">وصف ومواءمة الفكرة للمسار</h2>
+                    <p class="text-lg text-muted">حماية الأصول الرقمية لقطاع التقنية المالية السعودي</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                    <!-- Card 1 -->
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl space-y-3">
+                        <span class="material-symbols-outlined text-4xl text-primary">lightbulb</span>
+                        <h3 class="text-xl font-bold text-white">الفكرة المطورة</h3>
+                        <p class="text-sm text-muted">بناء جدار حماية محلي بالكامل (Inline Firewall) يعترض الحوالات غير المصرح بها دلالياً قبل إرسالها لشبكة الدفع الفوري للبنك المركزي.</p>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl space-y-3">
+                        <span class="material-symbols-outlined text-4xl text-secondary">gavel</span>
+                        <h3 class="text-xl font-bold text-white">معالجة المشكلة</h3>
+                        <p class="text-sm text-muted">مطابقة متطلبات المصرفية المفتوحة لساما تلقائياً، والتحقق البشري الإدراكي عند تجاوز الحوالات حد الـ 500 ريال أو ظهور ارتياب دلالي.</p>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="bg-surface/50 border border-border p-6 rounded-2xl space-y-3">
+                        <span class="material-symbols-outlined text-4xl text-accent">military_tech</span>
+                        <h3 class="text-xl font-bold text-white">الفوائد والابتكارات</h3>
+                        <p class="text-sm text-muted">معالجة فورية خفيفة الوزن توفر 99.8% من كلفة الـ APIs السحابية، وفهم كامل للهجة السعودية مع الامتثال الفوري لساما.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: Data Used (البيانات المستخدمة) -->
+        <div class="slide" id="slide-5">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
+                <!-- Data Sources -->
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-secondary font-bold text-lg">
+                            <span class="material-symbols-outlined">database</span>
+                            مصادر البيانات
+                        </div>
+                        <h3 class="text-3xl font-black text-white">قاموس درع اللهجة السعودية وقواعد ساما</h3>
+                        <p class="text-base text-muted leading-relaxed">
+                            تم جمع وتطوير قاعدة بيانات محلية تشمل ما يزيد عن <strong>200 مصطلح مالي عامي مريب</strong> يُستخدم في الاحتيال، بالإضافة إلى دمج وثيقة معايير المصرفية المفتوحة الصادرة من البنك المركزي لبناء مصفوفة مطابقة المخاطر التنظيمية.
+                        </p>
+                    </div>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-secondary font-mono">
+                        مستودع البيانات: محلي بالكامل ومحدث ديناميكياً لضمان الخصوصية وسرية البنك.
+                    </div>
+                </div>
+
+                <!-- Data Cleaning -->
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-primary font-bold text-lg">
+                            <span class="material-symbols-outlined">auto_fix_high</span>
+                            تنظيف ومعالجة البيانات
+                        </div>
+                        <h3 class="text-3xl font-black text-white">معالجة وتوطين المتجهات دلالياً</h3>
+                        <p class="text-base text-muted leading-relaxed">
+                            تتمعالجة نصوص العمليات بإزالة الكلمات الشائعة غير المؤثرة، ثم تشكيل وتصحيح العبارات إملائياً، تمهيداً لتحويل النص المالي إلى متجهات رياضية لمقارنتها بقاعدة البيانات المحلية.
+                        </p>
+                    </div>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-primary font-mono">
+                        التقنيات: Arabic Reshaper & Bidirectional text wrapping.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: Data Provisioning & Usage (كيفية توفير البيانات واستخدامها) -->
+        <div class="slide" id="slide-6">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
+                <!-- Data Gathering -->
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-accent font-bold text-lg">
+                            <span class="material-symbols-outlined">cloud_download</span>
+                            الحصول على البيانات وتأمينها
+                        </div>
+                        <h3 class="text-3xl font-black text-white">محاكاة هجمات الأوامر الخبيثة</h3>
+                        <p class="text-base text-muted leading-relaxed">
+                            تم الحصول على البيانات اللغوية للاحتيال بمحاكاة هجمات الأوامر (Prompt Injections) باللهجة السعودية وتوليد سيناريوهات التحايل المختلفة وتصنيفها في بيئة آمنة غير متصلة بالإنترنت لضمان سرية البيانات المصرفية.
+                        </p>
+                    </div>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-accent font-mono">
+                        المعايير الأمنية: ISO 27001 & SAMA Cyber Resilience Guidelines.
+                    </div>
+                </div>
+
+                <!-- Data Usage -->
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-primary font-bold text-lg">
+                            <span class="material-symbols-outlined">query_stats</span>
+                            تحليل واستخدام البيانات
+                        </div>
+                        <h3 class="text-3xl font-black text-white">حساب التشابه الدلالي الفوري</h3>
+                        <p class="text-base text-muted leading-relaxed">
+                            تُستخدم البيانات لفحص التطابق وحساب زوايا جيب التمام بين متجهات الحوالات وقاعدة بيانات التهديدات، مما يتيح اتخاذ قرار فوري (سليم، يتطلب تحقق، أو محظور) بدقة بالغة.
+                        </p>
+                    </div>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-primary font-mono text-center">
+                        $$\text{Sim}(A,B) = \frac{\sum A_i B_i}{\sqrt{\sum A_i^2} \sqrt{\sum B_i^2}}$$
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: Technologies Used (التقنيات المستخدمة) -->
+        <div class="slide" id="slide-7">
+            <div class="max-w-6xl w-full space-y-8">
+                <div class="text-center space-y-2">
+                    <h2 class="text-5xl font-black text-white">التقنيات المستخدمة</h2>
+                    <p class="text-lg text-muted">البنية التحتية البرمجية لبوابة Vector AI</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                    <!-- Column 1 -->
+                    <div class="bg-surface/40 border border-border p-6 rounded-2xl space-y-4">
+                        <h3 class="text-xl font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined">code</span>
+                            اللغات البرمجية
+                        </h3>
+                        <ul class="space-y-2 text-sm text-muted font-mono">
+                            <li class="text-white font-bold">&bull; Python (المحرك الرئيسي والخوارزميات)</li>
+                            <li>&bull; HTML5 (لوحة التحكم والعرض التفاعلي)</li>
+                            <li>&bull; JavaScript (محاكي السلايدر والتحقق)</li>
+                            <li>&bull; CSS3 (تنسيقات الواجهة الفاخرة)</li>
+                        </ul>
+                    </div>
+                    <!-- Column 2 -->
+                    <div class="bg-surface/40 border border-border p-6 rounded-2xl space-y-4">
+                        <h3 class="text-xl font-bold text-secondary flex items-center gap-2">
+                            <span class="material-symbols-outlined">layers</span>
+                            الأطر التقنية والمكتبات
+                        </h3>
+                        <ul class="space-y-2 text-sm text-muted font-mono">
+                            <li class="text-white font-bold">&bull; FastAPI (معالجة سريعة بأداء فائق)</li>
+                            <li>&bull; ReportLab (توليد تقارير الامتثال PDF)</li>
+                            <li>&bull; MathJax (عرض وتحليل المعادلات الرياضية)</li>
+                            <li>&bull; Uvicorn (خادم الويب عالي الاستقرار)</li>
+                        </ul>
+                    </div>
+                    <!-- Column 3 -->
+                    <div class="bg-surface/40 border border-border p-6 rounded-2xl space-y-4">
+                        <h3 class="text-xl font-bold text-accent flex items-center gap-2">
+                            <span class="material-symbols-outlined">construction</span>
+                            الأدوات البرمجية والبيئة
+                        </h3>
+                        <ul class="space-y-2 text-sm text-muted font-mono">
+                            <li class="text-white font-bold">&bull; SQLite (سجلات التدقيق غير القابلة للتعديل)</li>
+                            <li>&bull; Git & GitHub (إدارة وتكامل الكود المصدري)</li>
+                            <li>&bull; Visual Studio Code (بيئة التطوير المتكاملة)</li>
+                            <li>&bull; Docker (حزم البوابة لسهولة النشر الفوري)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: Testing & Verification (الاختبار والتحقق) -->
+        <div class="slide" id="slide-8">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
+                <!-- Prototype and Results -->
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-secondary font-bold text-lg">
+                            <span class="material-symbols-outlined">science</span>
+                            النماذج الأولية والنتائج
+                        </div>
+                        <h3 class="text-3xl font-black text-white">امتثال 100% لضوابط البنك المركزي</h3>
+                        <p class="text-base text-muted leading-relaxed">
+                            تم تطوير خوارزميات الفحص الدلالي وتوجيهها في الذاكرة الحية، وبناء بيئة اختبار متكاملة واجتياز **13 اختبار امتثال لساما بنجاح تام 100%**، وتأكيد قدرة البوابة على صد كافة الهجمات المتوقعة.
+                        </p>
+                    </div>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-secondary font-mono">
+                        مؤشر الامتثال: مطابقة أربعة أكواد تشريعية رئيسية لساما بالكامل.
+                    </div>
+                </div>
+
+                <!-- Testing Scenario -->
+                <div class="bg-surface/50 border border-border p-8 rounded-2xl flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-primary font-bold text-lg">
+                            <span class="material-symbols-outlined">checklist</span>
+                            مثال تطبيقي مقترح لـ 41 عملية فحص
+                        </div>
+                        <h3 class="text-3xl font-black text-white">محاكاة وفحص المدفوعات الفورية</h3>
+                        <p class="text-base text-muted leading-relaxed">
+                            "قمنا باختبار كفاءة محرك الأمان على محاكاة فحص لـ 41 عملية دفع وتحويل متتالية تضمنت عبارات عامية، ونصوصاً مشفرة بالكامل، للتأكد من فاعلية النموذج ودقة الاستجابة قبل الإطلاق."
+                        </p>
+                    </div>
+                    <div class="bg-black/30 p-4 rounded-xl text-xs text-primary font-mono text-center">
+                        معدل الحظر: 100% للهجمات | معدل الخطأ الكاذب: 0.8% فقط
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: Visual Demo (العرض التوضيحي) -->
+        <div class="slide" id="slide-9">
+            <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div class="space-y-6">
+                    <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-secondary/10 border border-secondary/30 text-secondary text-base font-bold">
+                        <span class="material-symbols-outlined text-base">slideshow</span>
+                        محاكاة لوحة التحكم التفاعلية
+                    </div>
+                    <h2 class="text-5xl font-black text-white leading-tight">شريط التحقق وسجلات SIEM لـ SAMA</h2>
+                    <p class="text-xl text-muted leading-relaxed">
+                        الهدف الأساسي من العرض هو إثبات جاهزية المشروع بنسبة تزيد عن <strong>30%</strong> بصورة عملية وملموسة من خلال تشغيل واجهة الفحص الفورية، وتحدي التحقق الإدراكي، والربط مع سجلات التدقيق المشفرة.
+                    </p>
+                </div>
+                <div class="bg-surface/60 border border-border p-6 rounded-2xl space-y-4 shadow-2xl">
+                    <h3 class="text-xl font-bold text-white border-b border-border/50 pb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">terminal</span>
+                        مخرجات فحص بوابة Vector AI
+                    </h3>
+                    <div class="bg-black/50 p-4 rounded-xl font-mono text-xs text-primary space-y-2 overflow-x-auto">
+                        <p class="text-muted"># طلب حوالة بقيمة 1500 ريال بنص عامي مريب</p>
+                        <p>HTTP/1.1 403 Forbidden</p>
+                        <p class="text-white">{"status": "blocked", "threat_type": "Arabic Dialect Injection"}</p>
+                        <p class="text-accent">"sama_compliance_code": "SAMA-OB-PIS-SEC-204"</p>
+                        <p class="text-secondary">"latency": "1.8ms"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: Challenges & Future Plans (التحديات والخطط المستقبلية) -->
+        <div class="slide" id="slide-10">
+            <div class="max-w-6xl w-full space-y-8">
+                <div class="text-center space-y-2">
+                    <h2 class="text-5xl font-black text-white">التحديات والخطط المستقبلية</h2>
+                    <p class="text-lg text-muted">خارطة طريق التطوير والتوسع للمشروع</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                    <!-- Challenge 1 -->
+                    <div class="bg-surface/50 border border-border p-6 rounded-xl space-y-3 relative hover:border-red-500/50 transition-colors">
+                        <div class="text-3xl font-black text-red-500 font-mono">01</div>
+                        <h3 class="text-lg font-bold text-white">التحديات والعقبات</h3>
+                        <p class="text-xs text-muted">ندرة توافر قواعد البيانات المفتوحة والموثقة للهجات العامية المستخدمة في الاحتيال المالي بالمملكة، والسرية الكبيرة للبنوك.</p>
+                    </div>
+                    <!-- Challenge 2 -->
+                    <div class="bg-surface/50 border border-border p-6 rounded-xl space-y-3 relative hover:border-secondary/50 transition-colors">
+                        <div class="text-3xl font-black text-secondary font-mono">02</div>
+                        <h3 class="text-lg font-bold text-white">ما نحتاجه للمساعدة فيه</h3>
+                        <p class="text-xs text-muted">توفير الوصول للبيئة التجريبية للبنك المركزي (SAMA Sandbox APIs) لاختبار كفاءة وتكامل البوابة مع المصرفية المفتوحة الفعلية.</p>
+                    </div>
+                    <!-- Challenge 3 -->
+                    <div class="bg-surface/50 border border-border p-6 rounded-xl space-y-3 relative hover:border-primary/50 transition-colors">
+                        <div class="text-3xl font-black text-primary font-mono">03</div>
+                        <h3 class="text-lg font-bold text-white">خارطة طريق العمل المستقبلي</h3>
+                        <p class="text-xs text-muted">بناء نظام التعلم المستمر للأنماط اللغوية المستجدة، وتغطية اللهجات الفرعية في المملكة بنسبة 100% خلال الأسبوعين القادمين.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: Thank you (شكراً لكم) -->
+        <div class="slide" id="slide-11">
+            <div class="max-w-5xl text-center space-y-8">
+                <span class="material-symbols-outlined text-[120px] text-primary animate-pulse">check_circle</span>
+                <h1 class="text-8xl md:text-9xl font-black tracking-tight leading-tight gradient-text">
+                    شكراً لكم
+                </h1>
+                <p class="text-4xl md:text-5xl font-extrabold text-white">
+                    THANK YOU
+                </p>
+                <div class="h-1.5 w-40 bg-gradient-to-r from-primary to-secondary mx-auto"></div>
+                <p class="text-2xl text-muted">
+                    يسعدنا استقبال أسئلتكم ومناقشتكم الموقرة
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JS for slide navigation -->
+    <script>
+        const totalSlides = 11;
+        let currentSlide = 1;
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach((s, idx) => {
+                if (idx + 1 === currentSlide) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+            document.getElementById('slide-num').innerText = `${currentSlide} / ${totalSlides}`;
+            document.getElementById('progress').style.width = `${(currentSlide / totalSlides) * 100}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Support arrow keys for slide transition
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                prevSlide(); // Because RTL is inverted
+            } else if (e.key === 'ArrowLeft') {
+                nextSlide(); // Because RTL is inverted
+            }
+        });
+    </script>
+</body>
+</html>

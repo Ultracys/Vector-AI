@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse, HTMLResponse
 from app.config import settings
 from app.api.router import api_router
 from app.core.logging import log_audit_event, audit_logger
+from app.core.database import init_db
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -15,6 +16,10 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
 
 # CORS Configuration for front-end integration
 app.add_middleware(
@@ -91,3 +96,23 @@ async def root():
         with open(static_file_path, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
     return HTMLResponse(content="<h1>Vector AI Frontend Not Found</h1>", status_code=404)
+
+@app.get("/slides", response_class=HTMLResponse, tags=["Root"])
+async def slides():
+    # Serve the static premium slide deck presentation_slides.html file
+    slide_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "presentation_slides.html")
+    if os.path.exists(slide_file_path):
+        with open(slide_file_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>Vector AI Presentation Slides Not Found</h1>", status_code=404)
+
+@app.get("/slides/practice", response_class=HTMLResponse, tags=["Root"])
+async def practice_slides():
+    # Serve the static premium slide deck practice_slides.html file
+    slide_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "practice_slides.html")
+    if os.path.exists(slide_file_path):
+        with open(slide_file_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>Vector AI Practice Slides Not Found</h1>", status_code=404)
+
+

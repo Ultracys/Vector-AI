@@ -905,6 +905,81 @@
                             </button>
                         </div>
                     </section>
+
+                    <!-- Compliance Settings Panel -->
+                    <section class="bg-surface-container border border-outline-variant rounded-xl p-lg space-y-md">
+                        <div class="border-b border-outline-variant pb-xs">
+                            <h3 class="font-label-caps text-label-caps text-white uppercase tracking-wider" data-i18n="complianceSettingsTitle">Compliance Engine Settings</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                            <div class="space-y-xs">
+                                <label class="block font-label-caps text-[13px] text-on-surface-variant uppercase" data-i18n="autoApproveLimitLabel">SAMA Auto-Approval Limit (SAR)</label>
+                                <div class="flex gap-sm">
+                                    <input type="number" step="1" id="config-approve-limit" class="flex-1 bg-surface-container-lowest border border-outline-variant rounded focus:border-tertiary focus:ring-0 text-base font-data-tabular p-sm" value="500">
+                                    <button onclick="saveComplianceSettings()" class="bg-tertiary text-on-tertiary hover:bg-tertiary-fixed-dim px-lg py-sm rounded font-label-caps text-label-caps uppercase transition-colors" data-i18n="saveBtn">Save Settings</button>
+                                </div>
+                                <p class="text-[12px] text-on-surface-variant" data-i18n="autoApproveLimitDesc">Transactions below this threshold are auto-approved. Transactions at or above this limit trigger SAMA verification.</p>
+                            </div>
+                            <div class="space-y-xs">
+                                <label class="block font-label-caps text-[13px] text-on-surface-variant uppercase" data-i18n="semanticThresholdLabel">Semantic Threat Threshold</label>
+                                <div class="flex gap-sm items-center">
+                                    <input type="range" min="0" max="100" value="40" id="config-semantic-threshold-slider" class="flex-1 accent-tertiary" oninput="document.getElementById('config-semantic-threshold-val').textContent = (this.value / 100).toFixed(2)">
+                                    <span id="config-semantic-threshold-val" class="font-data-tabular text-base text-tertiary font-bold w-12 text-center">0.40</span>
+                                    <button onclick="saveComplianceSettings()" class="bg-tertiary text-on-tertiary hover:bg-tertiary-fixed-dim px-lg py-sm rounded font-label-caps text-label-caps uppercase transition-colors" data-i18n="saveBtn">Save Settings</button>
+                                </div>
+                                <p class="text-[12px] text-on-surface-variant" data-i18n="semanticThresholdDesc">Similarity threshold for blocking prompt injections (lower = stricter/more blocks, higher = more relaxed).</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Regulatory Transaction Ledger & SIEM Security Logs (2-column layout) -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-lg">
+                        <!-- Live Audit Ledger -->
+                        <section class="bg-surface-container border border-outline-variant rounded-xl p-lg space-y-md">
+                            <div class="flex justify-between items-center border-b border-outline-variant pb-xs">
+                                <h3 class="font-label-caps text-label-caps text-white uppercase tracking-wider" data-i18n="ledgerTitle">Live Audit Ledger</h3>
+                                <span class="px-xs py-0.5 text-[11px] font-data-tabular bg-surface-container-high rounded text-on-surface-variant uppercase animate-pulse" data-i18n="liveBadge">LIVE</span>
+                            </div>
+                            <div class="overflow-x-auto max-h-[400px] overflow-y-auto pr-xs">
+                                <table class="w-full text-left text-base font-data-tabular border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-outline-variant text-[13px] text-on-surface-variant uppercase">
+                                            <th class="pb-sm pr-xs" data-i18n="colTxId">Tx ID</th>
+                                            <th class="pb-sm px-xs" data-i18n="colDetails">Details</th>
+                                            <th class="pb-sm px-xs text-right" data-i18n="colAmount">Amount</th>
+                                            <th class="pb-sm pl-xs text-right" data-i18n="colStatus">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="audit-ledger-body">
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <!-- SIEM Audit Trails / Security Logs -->
+                        <section class="bg-surface-container border border-outline-variant rounded-xl p-lg space-y-md">
+                            <div class="flex justify-between items-center border-b border-outline-variant pb-xs">
+                                <h3 class="font-label-caps text-label-caps text-white uppercase tracking-wider" data-i18n="securityLogsTitle">SIEM Security Logs</h3>
+                                <span class="px-xs py-0.5 text-[11px] font-data-tabular bg-surface-container-high rounded text-on-surface-variant uppercase" data-i18n="siemBadge">SIEM</span>
+                            </div>
+                            <div class="overflow-x-auto max-h-[400px] overflow-y-auto pr-xs">
+                                <table class="w-full text-left text-base font-data-tabular border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-outline-variant text-[13px] text-on-surface-variant uppercase">
+                                            <th class="pb-sm pr-xs" data-i18n="colTime">Time</th>
+                                            <th class="pb-sm px-xs" data-i18n="colAction">Action</th>
+                                            <th class="pb-sm px-xs" data-i18n="colStatusOutcome">Outcome</th>
+                                            <th class="pb-sm pl-xs text-right" data-i18n="colSamaRef">SAMA Ref</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="audit-security-logs-body">
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
                 </div>
 
             </div>
@@ -1175,6 +1250,24 @@
                 lastTelemetrySyncLabel: "LAST TELEMETRY SYNC",
                 environmentLabel: "ENVIRONMENT",
                 refreshTelemetryBtn: "Refresh Audit Telemetry",
+                complianceSettingsTitle: "Compliance Engine Settings",
+                autoApproveLimitLabel: "SAMA Auto-Approval Limit (SAR)",
+                autoApproveLimitDesc: "Transactions below this threshold are auto-approved. Transactions at or above this limit trigger SAMA verification.",
+                semanticThresholdLabel: "Semantic Threat Threshold",
+                semanticThresholdDesc: "Similarity threshold for blocking prompt injections (lower = stricter/more blocks, higher = more relaxed).",
+                saveBtn: "Save Settings",
+                ledgerTitle: "Live Audit Ledger",
+                liveBadge: "LIVE",
+                colTxId: "Tx ID",
+                colDetails: "Details",
+                colAmount: "Amount",
+                colStatus: "Status",
+                securityLogsTitle: "SIEM Security Logs",
+                siemBadge: "SIEM",
+                colTime: "Time",
+                colAction: "Action",
+                colStatusOutcome: "Outcome",
+                colSamaRef: "SAMA Ref",
                 never: "Never",
 
                 // Modals General
@@ -1368,6 +1461,24 @@
                 lastTelemetrySyncLabel: "آخر مزامنة لبيانات الامتثال",
                 environmentLabel: "البيئة",
                 refreshTelemetryBtn: "تحديث بيانات التدقيق",
+                complianceSettingsTitle: "إعدادات محرك الامتثال",
+                autoApproveLimitLabel: "حد الموافقة التلقائية لساما (ريال سعودي)",
+                autoApproveLimitDesc: "يتمت الموافقة تلقائياً على المعاملات التي تقل عن هذا الحد. المعاملات المساوية للحد أو التي تزيد عنه تتطلب تحقق ساما الإضافي.",
+                semanticThresholdLabel: "حد التهديد الدلالي",
+                semanticThresholdDesc: "عتبة التشابه لمنع هجمات حقن الأوامر (الأقل = أكثر صرامة، الأعلى = أكثر مرونة).",
+                saveBtn: "حفظ الإعدادات",
+                ledgerTitle: "سجل التدقيق المباشر",
+                liveBadge: "مباشر",
+                colTxId: "رقم العملية",
+                colDetails: "التفاصيل",
+                colAmount: "المبلغ",
+                colStatus: "الحالة",
+                securityLogsTitle: "سجلات أمان SIEM",
+                siemBadge: "نظام SIEM",
+                colTime: "الوقت",
+                colAction: "الإجراء",
+                colStatusOutcome: "النتيجة",
+                colSamaRef: "مرجع ساما",
                 never: "أبداً",
 
                 // Modals General
@@ -1624,8 +1735,138 @@
                         sama_reference: "SAMA-OB-COMP-AUD-099"
                     });
                 }
+                
+                // Keep UI elements and database settings synced
+                fetchComplianceSettings();
+                fetchAuditDetails();
             } catch (e) {
                 console.error("Compliance sync error:", e);
+            }
+        }
+
+        async function fetchComplianceSettings() {
+            try {
+                const response = await fetch('/api/v1/compliance/settings');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.sama_auto_approve_limit) {
+                        const limitInput = document.getElementById('config-approve-limit');
+                        if (limitInput) limitInput.value = parseInt(data.sama_auto_approve_limit);
+                    }
+                    if (data.semantic_threshold) {
+                        const threshold = parseFloat(data.semantic_threshold);
+                        const slider = document.getElementById('config-semantic-threshold-slider');
+                        if (slider) slider.value = Math.round(threshold * 100);
+                        const valText = document.getElementById('config-semantic-threshold-val');
+                        if (valText) valText.textContent = threshold.toFixed(2);
+                    }
+                }
+            } catch (e) {
+                console.error("Error loading compliance settings:", e);
+            }
+        }
+
+        async function saveComplianceSettings() {
+            const limitVal = parseInt(document.getElementById('config-approve-limit').value) || 500;
+            const sliderVal = parseFloat(document.getElementById('config-semantic-threshold-slider').value) / 100;
+            
+            try {
+                const response = await fetch('/api/v1/compliance/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sama_auto_approve_limit: limitVal.toString(),
+                        semantic_threshold: sliderVal.toFixed(2)
+                    })
+                });
+                
+                if (response.ok) {
+                    addConsoleLog({
+                        timestamp: new Date().toISOString(),
+                        level: "WARNING",
+                        logger: "vector_compliance",
+                        message: `Compliance rule modification: Limit set to ${limitVal} SAR, Semantic threshold set to ${sliderVal.toFixed(2)}`,
+                        action: "COMPLIANCE_SETTINGS_UPDATE",
+                        status: "COMPLIANT",
+                        sama_reference: "SAMA-OB-COMP-RULE-088"
+                    });
+                    
+                    // Show a temporary visual indication of save success
+                    fetchComplianceStatus();
+                }
+            } catch (e) {
+                console.error("Error saving settings:", e);
+            }
+        }
+
+        async function fetchAuditDetails() {
+            try {
+                // 1. Fetch transactions
+                const txResponse = await fetch('/api/v1/compliance/transactions?limit=20');
+                if (txResponse.ok) {
+                    const txs = await txResponse.json();
+                    const ledgerBody = document.getElementById('audit-ledger-body');
+                    if (ledgerBody) {
+                        ledgerBody.innerHTML = '';
+                        if (txs.length === 0) {
+                            ledgerBody.innerHTML = `<tr><td colspan="4" class="py-md text-center text-on-surface-variant font-label-caps uppercase text-[13px]">No transactions audited yet.</td></tr>`;
+                        } else {
+                            txs.forEach(t => {
+                                let statusClass = "text-emerald-400 bg-emerald-955 border-emerald-500/30";
+                                if (t.status === "blocked") statusClass = "text-red-400 bg-red-955 border-red-500/30";
+                                else if (t.status === "requires_verification") statusClass = "text-amber-400 bg-amber-955 border-amber-500/30";
+                                
+                                const row = document.createElement('tr');
+                                row.className = "border-b border-outline-variant/30 py-xs text-sm hover:bg-surface-container-high/30";
+                                row.innerHTML = `
+                                    <td class="py-xs pr-xs font-bold text-white max-w-[85px] truncate" title="${t.transaction_id}">${t.transaction_id}</td>
+                                    <td class="py-xs px-xs text-on-surface-variant max-w-[150px]">
+                                        <div class="truncate font-semibold text-on-surface">${t.creditor_account.account_holder}</div>
+                                        <div class="truncate text-[11px] font-mono text-gray-500">${t.narrative || 'No description'}</div>
+                                    </td>
+                                    <td class="py-xs px-xs text-right font-bold text-white">${t.amount.toLocaleString(undefined, {minimumFractionDigits: 2})} ${t.currency}</td>
+                                    <td class="py-xs pl-xs text-right">
+                                        <span class="px-xs py-0.5 rounded text-[11px] font-bold border ${statusClass}">${t.status}</span>
+                                    </td>
+                                `;
+                                ledgerBody.appendChild(row);
+                            });
+                        }
+                    }
+                }
+                
+                // 2. Fetch security logs
+                const logsResponse = await fetch('/api/v1/compliance/logs?limit=20');
+                if (logsResponse.ok) {
+                    const logs = await logsResponse.json();
+                    const logsBody = document.getElementById('audit-security-logs-body');
+                    if (logsBody) {
+                        logsBody.innerHTML = '';
+                        if (logs.length === 0) {
+                            logsBody.innerHTML = `<tr><td colspan="4" class="py-md text-center text-on-surface-variant font-label-caps uppercase text-[13px]">No security logs recorded.</td></tr>`;
+                        } else {
+                            logs.forEach(l => {
+                                let outcomeClass = "text-emerald-400";
+                                if (l.status === "BLOCKED") outcomeClass = "text-red-400 font-bold";
+                                else if (l.status === "WARNING") outcomeClass = "text-amber-400";
+                                
+                                const timeStr = l.created_at ? new Date(l.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : 'N/A';
+                                
+                                const row = document.createElement('tr');
+                                row.className = "border-b border-outline-variant/30 py-xs text-sm hover:bg-surface-container-high/30";
+                                row.innerHTML = `
+                                    <td class="py-xs pr-xs text-gray-500 text-[12px]">${timeStr}</td>
+                                    <td class="py-xs px-xs font-semibold text-white max-w-[120px] truncate" title="${l.action}">${l.action}</td>
+                                    <td class="py-xs px-xs ${outcomeClass}">${l.status}</td>
+                                    <td class="py-xs pl-xs text-right font-mono text-[12px] text-tertiary">${l.sama_reference || 'N/A'}</td>
+                                `;
+                                logsBody.appendChild(row);
+                            });
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Error loading audit logs:", e);
             }
         }
 
@@ -2109,7 +2350,10 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Correlation-ID': correlationId
+                        'X-Correlation-ID': correlationId,
+                        'X-Fapi-Interaction-Id': correlationId,
+                        'Authorization': 'Bearer mock_sama_token_12345',
+                        'X-Jws-Signature': 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMyJ9..MOCK_SIG'
                     },
                     body: JSON.stringify({
                         debtor_account: {

@@ -1,16 +1,23 @@
 import time
 import uuid
-from fastapi import APIRouter, Request
+import json
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 from app.schemas.guardrails import PromptValidationRequest, PromptValidationResponse
 from app.core.security import evaluate_semantic_threat
 from app.core.logging import log_audit_event
 from app.config import settings
+from app.core.database import get_db, DBSecurityLog
 
 router = APIRouter()
 
 @router.post("/validate-prompt", response_model=PromptValidationResponse)
-async def validate_prompt(request: Request, payload: PromptValidationRequest):
+async def validate_prompt(
+    request: Request, 
+    payload: PromptValidationRequest,
+    db: Session = Depends(get_db)
+):
     start_time = time.perf_counter()
     correlation_id = payload.correlation_id or str(uuid.uuid4())
     client_ip = request.client.host if request.client else "unknown"
@@ -46,6 +53,24 @@ async def validate_prompt(request: Request, payload: PromptValidationRequest):
                 "risk_matrix": metadata.get("risk_matrix"),
             }
         )
+        
+        # Save security log to DB
+        try:
+            db_log = DBSecurityLog(
+                correlation_id=correlation_id,
+                action="PROMPT_VALIDATION",
+                message=f"Semantic anomaly blocked: prompt matches {threat_type} (score: {score:.2f})",
+                status="BLOCKED",
+                sama_reference="SAMA-OB-PIS-SEC-204",
+                latency_ms=latency_ms,
+                extra_data=json.dumps(metadata)
+            )
+            db.add(db_log)
+            db.commit()
+        except Exception as db_err:
+            db.rollback()
+            print(f"Database error: {db_err}")
+            
         # SAMA compliant 403 Forbidden payload
         return JSONResponse(
             status_code=403,
@@ -78,6 +103,23 @@ async def validate_prompt(request: Request, payload: PromptValidationRequest):
         }
     )
     
+    # Save security log to DB
+    try:
+        db_log = DBSecurityLog(
+            correlation_id=correlation_id,
+            action="PROMPT_VALIDATION",
+            message="Prompt successfully validated by Vector Guardrails Gateway",
+            status="VALIDATED",
+            sama_reference="SAMA-OB-PIS-SEC-101",
+            latency_ms=latency_ms,
+            extra_data=json.dumps(metadata)
+        )
+        db.add(db_log)
+        db.commit()
+    except Exception as db_err:
+        db.rollback()
+        print(f"Database error: {db_err}")
+    
     return PromptValidationResponse(
         status="validated",
         risk_score=score,
@@ -88,3 +130,4 @@ async def validate_prompt(request: Request, payload: PromptValidationRequest):
         decoded_prompt=metadata.get("decoded_prompt"),
         layer_results=metadata.get("layer_results"),
     )
+
